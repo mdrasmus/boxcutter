@@ -490,8 +490,6 @@ int WINAPI WinMain (HINSTANCE hInstance,
     if (i < argc)
         filename = argv[i];
     
-    printf("save to file: '%s'\n", filename);
-    
     
     
     // create screenshot window
@@ -501,12 +499,12 @@ int WINAPI WinMain (HINSTANCE hInstance,
     win.activate();
     g_win = &win;
     
-    // message structure
-    MSG msg;
-    
+    printf("save to file: '%s'\n", filename);
+
     
     // main loop: retrieve all messages for this process
     int ret;
+    MSG msg; // message structure
     while ((ret = GetMessage(&msg, 0, 0, 0)) != 0)
     {
         if (ret == -1) {
