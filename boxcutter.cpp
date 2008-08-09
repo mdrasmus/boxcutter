@@ -515,9 +515,9 @@ char **get_args(int *argc)
     
     // convert args to char*
     for (int i=0; i<*argc; i++) {
-        int len = wcslen(wargv[i]);
-        argv[i] = new char [len+1];
-        sprintf(argv[i], "%ws", wargv[i]);        
+        int len = wcslen(wargv[i]) + 1;
+        argv[i] = new char [len];
+        snprintf(argv[i], len, "%ws", wargv[i]);        
     }
     
     return argv;
