@@ -1,6 +1,6 @@
 # Makefile for boxcutter
 
-VERSION = 1.0
+VERSION = 1.1
 FILES = \
 	boxcutter.cpp \
 	boxcutter.exe \
