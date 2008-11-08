@@ -10,7 +10,9 @@
 
 // c includes
 #include <stdio.h>
+//#include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 // windows includes
 #include <windows.h>
@@ -26,6 +28,7 @@ screenshot is stored on clipboard by default.\n\
 \n\
 OPTIONS\n\
   -c, --coords X1,Y1,X2,Y2    capture the rectange (X1,Y1)-(X2,Y2)\n\
+  -f, --fullscreen            capture the full screen\n\
   -h, --help                  display help message\n\
 ";
 
@@ -344,6 +347,7 @@ public:
         strcpy(m_class_name, g_class_name);
         wc.hInstance = hinst; 
         wc.lpszClassName = m_class_name;
+        wc.lpszMenuName = "";
         wc.lpfnWndProc = WindowProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
@@ -436,7 +440,7 @@ public:
 
     //=======================================
     // event callbacks
-    LRESULT CALLBACK static WindowProc(HWND hwnd,
+    static LRESULT CALLBACK WindowProc(HWND hwnd,
                                        UINT uMsg,
                                        WPARAM wParam,
                                        LPARAM lParam)
@@ -593,11 +597,19 @@ int main_loop()
 
 //=============================================================================
 // main function
+
+/*
 int WINAPI WinMain (HINSTANCE hInstance, 
                     HINSTANCE hPrevInstance, 
                     PSTR cmdline, 
                     int iCmdShow) 
+{*/
+int main(int argc, char **argv)
 {
+    HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+
+    printf("hello\n");
+    
     InitCommonControls();
     
     // default screenshot filename
@@ -608,16 +620,30 @@ int WINAPI WinMain (HINSTANCE hInstance,
     int x1, y1, x2, y2;
     
     // parse command line
-    int argc;
-    char **argv = get_args(&argc);
+    //int argc;
+    //char **argv = get_args(&argc);
     int i;
 
     // parse options
     for (i=1; i<argc; i++) {
+        printf("file: %s\n", argv[i]);
+    
         if (argv[i][0] != '-')
             // argument is not an option
             break;
 
+        else if (strcmp(argv[i], "-f") == 0 ||
+                 strcmp(argv[i], "--fullscreen") == 0) 
+        {
+            RECT rect;
+            GetWindowRect(GetDesktopWindow(), &rect);
+            x1 = rect.left;
+            y1 = rect.top;
+            x2 = rect.right;
+            y2 = rect.bottom;
+            use_coords = true;
+        }
+        
         else if (strcmp(argv[i], "-c") == 0 ||
                  strcmp(argv[i], "--coords") == 0) 
         {
