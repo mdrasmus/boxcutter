@@ -8,16 +8,27 @@
 
 =============================================================================*/
 
+// this definition is needed for AttachConsole
+#define _WIN32_WINNT 0x0501
+
+
 // c includes
 #include <stdio.h>
-//#include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 
+#include <iostream>
+#include <fstream>
+
 // windows includes
 #include <windows.h>
+#include <wincon.h>
 #include <commctrl.h>
 #include <winuser.h>
+#include <io.h>
+#include <conio.h>
+#include <fcntl.h>
+
 
 
 // constants
@@ -595,6 +606,55 @@ int main_loop()
 }
 
 
+void setup_console()
+{
+    int hConHandle;
+    long lStdHandle;
+    CONSOLE_SCREEN_BUFFER_INFO coninfo;
+	FILE *fp;
+
+    // create a console
+	//AllocConsole();
+    if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+        // if no parent console then give up
+        return;
+    }
+    
+	const unsigned int MAX_CONSOLE_LINES = 500;
+	// set the screen buffer to be big enough to let us scroll text
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE),	&coninfo);
+	coninfo.dwSize.Y = MAX_CONSOLE_LINES;
+	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE),	coninfo.dwSize);
+
+	// redirect unbuffered STDOUT to the console
+	lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stdout = *fp;
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+	// redirect unbuffered STDIN to the console
+	lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "r");
+	*stdin = *fp;
+	setvbuf(stdin, NULL, _IONBF, 0);
+
+	// redirect unbuffered STDERR to the console
+	lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	fp = _fdopen(hConHandle, "w");
+	*stderr = *fp;
+	setvbuf(stderr, NULL, _IONBF, 0);
+
+	// make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog
+	// point to console as well
+	std::ios::sync_with_stdio();
+
+}
+
+
+
 //=============================================================================
 // main function
 
@@ -608,9 +668,8 @@ int main(int argc, char **argv)
 {
     HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
 
-    printf("hello\n");
-    
     InitCommonControls();
+    setup_console();
     
     // default screenshot filename
     char *filename = NULL;
@@ -724,7 +783,7 @@ int main(int argc, char **argv)
 
     win.close();
     
-    delete_args(argc, argv);
+    delete_args(argc, argv);    
     
     return 0;
 }

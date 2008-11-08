@@ -15,5 +15,6 @@ screenshot is stored on clipboard by default.
 
 OPTIONS
   -c, --coords X1,Y1,X2,Y2    capture the rectange (X1,Y1)-(X2,Y2)
+  -f, --fullscreen            capture the full screen\n\
   -h, --help                  display help message
 
