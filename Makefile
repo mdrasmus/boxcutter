@@ -9,6 +9,8 @@ FILES = \
 	COPYING.LESSER \
 	LICENSE
 
+WWW = /z/mnt/big/www/dev/rasm/boxcutter/download
+
 
 boxcutter: boxcutter.cpp
 	g++ boxcutter.cpp -o boxcutter -mwindows \
@@ -20,6 +22,10 @@ distrib:
 	mkdir -p dist/boxcutter-$(VERSION)
 	cp $(FILES) dist/boxcutter-$(VERSION)
 	tar zcvf dist/boxcutter-$(VERSION).tar.gz dist/boxcutter-$(VERSION)
+    
+winupload:
+	cp -r dist/boxcutter-$(VERSION).tar.gz \
+        dist/boxcutter-$(VERSION) $(WWW)
 
 clean:
 	rm -f boxcutter.exe
