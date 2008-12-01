@@ -1,6 +1,6 @@
 # Makefile for boxcutter
 
-VERSION = 1.1
+VERSION = 1.2
 FILES = \
 	boxcutter.cpp \
 	boxcutter.exe \
@@ -8,13 +8,14 @@ FILES = \
 	README.txt \
 	COPYING.LESSER \
 	LICENSE
-
+CC=/c/mingw/bin/g++
+    
 WWW = /z/mnt/big/www/dev/rasm/boxcutter/download
 
 
 boxcutter: boxcutter.cpp
-	g++ boxcutter.cpp -o boxcutter -mwindows \
-		-lcomctl32 -lgdi32
+	$(CC) boxcutter.cpp -o boxcutter -mwindows \
+		  -lcomctl32 -lgdi32
 
 distrib:
 	mkdir -p dist

@@ -29,20 +29,25 @@
 #include <conio.h>
 #include <fcntl.h>
 
-
+#define BOX_VERSION "1.2"
 
 // constants
-const char*USAGE = "\n\
+const char* g_usage = "\n\
 usage: boxcutter [OPTIONS] [OUTPUT_FILENAME]\n\
 Saves a bitmap screenshot to 'OUTPUT_FILENAME' if given.  Otherwise, \n\
-screenshot is stored on clipboard by default.\n\
+screenshot is stored on the clipboard by default.\n\
 \n\
 OPTIONS\n\
   -c, --coords X1,Y1,X2,Y2    capture the rectange (X1,Y1)-(X2,Y2)\n\
   -f, --fullscreen            capture the full screen\n\
+  -v, --version               display version information\n\
   -h, --help                  display help message\n\
 ";
 
+const char* g_version = "\n\
+boxcutter %s\n\
+Copyright Matt Rasmussen 2008\n\
+";
 
 const char *g_class_name = "BoxCutter";
 
@@ -251,8 +256,11 @@ bool save_bitmap_file(HBITMAP hBmp, HDC hDC, const char *filename)
 
     return true;
 }
+// End of Mark Hammond copyrighted code.
 
 
+// Using swaps, ensure that x2 >= x, y2 >= y for capturing a rectangle of the
+// screen.
 void normalize_coords(int *x, int *y, int *x2, int *y2)
 {
     if (*x > *x2) {
@@ -378,6 +386,9 @@ public:
         // create window
         DWORD exstyle = WS_EX_TRANSPARENT;
         DWORD style = WS_POPUP;
+        
+        // set this window as the receiver of messages
+        g_win = this;
         
         m_handle = CreateWindowEx(exstyle,
                                   m_class_name, 
@@ -557,42 +568,26 @@ private:
 
 
 //=============================================================================
-// Returns commandline arguments: argv, argc 
-char **get_args(int *argc)
-{
-    LPWSTR *wargv = CommandLineToArgvW(GetCommandLineW(), argc);
-    
-    char **argv = new char* [*argc];
-    
-    // convert args to char*
-    for (int i=0; i<*argc; i++) {
-        int len = wcslen(wargv[i]) + 1;
-        argv[i] = new char [len];
-        snprintf(argv[i], len, "%ws", wargv[i]);        
-    }
-    
-    return argv;
-}
 
-// Deletes arguments
-void delete_args(int argc, char **argv)
-{
-    for (int i=0; i<argc; i++)
-        delete [] argv[i];
-    delete [] argv;
-}
-
+// Display usage information
 void usage()
 {
-    printf(USAGE);
+    printf(g_usage);
 }
 
-int main_loop()
+// Display version information
+void version()
 {
-    // main loop: retrieve all messages for this process
+    printf(g_version, BOX_VERSION);
+}
+
+
+// Pump the message queue for this process.
+int main_loop(BoxCutterWindow* win)
+{
     int ret;
     MSG msg; // message structure
-    while ((ret = GetMessage(&msg, 0, 0, 0)) != 0 && g_win->active())
+    while ((ret = GetMessage(&msg, 0, 0, 0)) != 0 && win->active())
     {
         if (ret == -1) {
             // error occurred
@@ -606,8 +601,8 @@ int main_loop()
     return msg.wParam;
 }
 
-
-void setup_console()
+// Setup the console for output (e.g. using printf)
+bool setup_console()
 {
     int hConHandle;
     long lStdHandle;
@@ -615,11 +610,11 @@ void setup_console()
 	FILE *fp;
 
     // create a console
-	//AllocConsole();
     if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
-        // if no parent console then give up
-        return;
+        // if no parent console then give up        
+        return false;
     }
+    
     
 	const unsigned int MAX_CONSOLE_LINES = 500;
 	// set the screen buffer to be big enough to let us scroll text
@@ -627,24 +622,39 @@ void setup_console()
 	coninfo.dwSize.Y = MAX_CONSOLE_LINES;
 	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE),	coninfo.dwSize);
 
+    
 	// redirect unbuffered STDOUT to the console
-	lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+	lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);    
 	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	fp = _fdopen(hConHandle, "w");
+	fp = _fdopen(hConHandle, "w");    
+    if (!fp) {
+        // could not open stdout
+        return false;
+    }
 	*stdout = *fp;
 	setvbuf(stdout, NULL, _IONBF, 0);
-
+    
+    
 	// redirect unbuffered STDIN to the console
 	lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
 	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
 	fp = _fdopen(hConHandle, "r");
+    if (!fp) {
+        // could not open stdin
+        return false;
+    }
 	*stdin = *fp;
 	setvbuf(stdin, NULL, _IONBF, 0);
 
+    
 	// redirect unbuffered STDERR to the console
 	lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
 	hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
 	fp = _fdopen(hConHandle, "w");
+    if (!fp) {
+        // could not open stderr
+        return false;
+    }
 	*stderr = *fp;
 	setvbuf(stderr, NULL, _IONBF, 0);
 
@@ -652,6 +662,7 @@ void setup_console()
 	// point to console as well
 	std::ios::sync_with_stdio();
 
+    return true;
 }
 
 
@@ -659,12 +670,7 @@ void setup_console()
 //=============================================================================
 // main function
 
-/*
-int WINAPI WinMain (HINSTANCE hInstance, 
-                    HINSTANCE hPrevInstance, 
-                    PSTR cmdline, 
-                    int iCmdShow) 
-{*/
+
 int main(int argc, char **argv)
 {
     HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
@@ -680,8 +686,6 @@ int main(int argc, char **argv)
     int x1, y1, x2, y2;
     
     // parse command line
-    //int argc;
-    //char **argv = get_args(&argc);
     int i;
 
     // parse options
@@ -719,6 +723,14 @@ int main(int argc, char **argv)
             
             use_coords = true;
         }
+        
+        else if (strcmp(argv[i], "-v") == 0 ||
+                 strcmp(argv[i], "--version") == 0)
+        {
+            // display version information
+            version();
+            return 1;
+        }
 
         else if (strcmp(argv[i], "-h") == 0 ||
                  strcmp(argv[i], "--help") == 0)
@@ -743,7 +755,7 @@ int main(int argc, char **argv)
 
     // create screenshot window
     BoxCutterWindow win(hInstance, "BoxCutter", filename);
-    g_win = &win;
+    
 
     if (use_coords) {
         win.show();
@@ -753,7 +765,7 @@ int main(int argc, char **argv)
         win.maximize();
         win.activate();
         
-        main_loop();
+        main_loop(&win);
         if (win.have_coords()) {
             win.get_coords(&x1, &y1, &x2, &y2);
         } else {
@@ -762,6 +774,7 @@ int main(int argc, char **argv)
         }
     }
 
+    // display screenshot coords
     printf("screenshot coords: (%d,%d)-(%d,%d)\n", x1, y1, x2, y2);
 
 
@@ -772,25 +785,23 @@ int main(int argc, char **argv)
         {
             MessageBox(win.get_handle(), "Cannot save screenshot", 
                        "Error", MB_OK);
-	    return 1;
+            return 1;
         }
 
-	printf("screenshot saved to file: %s\n", filename);
+        printf("screenshot saved to file: %s\n", filename);
     } else {
         // save to clipboard
         if (!capture_screen_clipboard(win.get_handle(), x1, y1, x2, y2))
         {
             MessageBox(win.get_handle(), "Cannot save screenshot to clipboard", 
                        "Error", MB_OK);
-	    return 1;
+            return 1;
         }
 
-	printf("screenshot saved to clipboard.\n");
+        printf("screenshot saved to clipboard.\n");
     }
 
     win.close();
-    
-    delete_args(argc, argv);    
     
     return 0;
 }
