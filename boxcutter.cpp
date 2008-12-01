@@ -284,6 +284,7 @@ bool capture_screen(const char *filename, int x, int y, int x2, int y2)
     HGDIOBJ old_obj = SelectObject(shot_dc, shot_bitmap);
     
     if (!BitBlt(shot_dc, 0, 0, w, h, screen_dc, x, y, SRCCOPY)) {
+	printf("error: BitBlt failed\n");
         return false;
     }
     
@@ -685,8 +686,6 @@ int main(int argc, char **argv)
 
     // parse options
     for (i=1; i<argc; i++) {
-        printf("file: %s\n", argv[i]);
-    
         if (argv[i][0] != '-')
             // argument is not an option
             break;
@@ -739,7 +738,6 @@ int main(int argc, char **argv)
     // argument after options is a filename
     if (i < argc)
         filename = argv[i];
-    
 
 
 
@@ -764,6 +762,9 @@ int main(int argc, char **argv)
         }
     }
 
+    printf("screenshot coords: (%d,%d)-(%d,%d)\n", x1, y1, x2, y2);
+
+
     // save bitmap
     if (filename) {
         // save to file
@@ -771,14 +772,20 @@ int main(int argc, char **argv)
         {
             MessageBox(win.get_handle(), "Cannot save screenshot", 
                        "Error", MB_OK);
+	    return 1;
         }
+
+	printf("screenshot saved to file: %s\n", filename);
     } else {
         // save to clipboard
         if (!capture_screen_clipboard(win.get_handle(), x1, y1, x2, y2))
         {
             MessageBox(win.get_handle(), "Cannot save screenshot to clipboard", 
                        "Error", MB_OK);
+	    return 1;
         }
+
+	printf("screenshot saved to clipboard.\n");
     }
 
     win.close();
