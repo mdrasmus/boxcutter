@@ -29,7 +29,7 @@
 #include <conio.h>
 #include <fcntl.h>
 
-#define BOX_VERSION "1.2"
+#define BOX_VERSION "1.3"
 
 // constants
 const char* g_usage = "\n\
