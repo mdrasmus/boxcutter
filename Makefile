@@ -9,18 +9,18 @@ FILES = boxcutter.cpp \
 	README.txt \
 	COPYING.LESSER \
 	LICENSE
-CC=/c/mingw/bin/g++
-    
-WWW = /z/mnt/big/www/dev/rasm/boxcutter/download
+CC=c:/mingw/bin/g++
+
+WWW = /var/www/dev/rasm/boxcutter/download
 
 CFLAGS=-mwindows -lcomctl32 -lgdi32 -I/usr/include/wine/msvcrt
 
-all: boxcutter boxcutter-fs
+all: boxcutter.exe boxcutter-fs.exe
 
-boxcutter: boxcutter.cpp
+boxcutter.exe: boxcutter.cpp
 	$(CC) boxcutter.cpp -o boxcutter $(CFLAGS)
 
-boxcutter-fs: boxcutter-fs.cpp
+boxcutter-fs.exe: boxcutter-fs.cpp
 	$(CC) boxcutter-fs.cpp -o boxcutter-fs $(CFLAGS)
 
 
@@ -29,11 +29,11 @@ pkg:
 	rm -rf dist/boxcutter-$(VERSION)
 	mkdir -p dist/boxcutter-$(VERSION)
 	cp $(FILES) dist/boxcutter-$(VERSION)
-	tar zcvf dist/boxcutter-$(VERSION).tar.gz dist/boxcutter-$(VERSION)
-    
-winupload:
-	cp -r dist/boxcutter-$(VERSION).tar.gz \
-        dist/boxcutter-$(VERSION) $(WWW)
+	zip -r dist/boxcutter-$(VERSION).zip dist/boxcutter-$(VERSION)
+
+upload:
+	cp -r dist/boxcutter-$(VERSION).zip \
+              dist/boxcutter-$(VERSION) $(WWW)
 
 clean:
 	rm -f boxcutter.exe boxcutter-fs.exe
