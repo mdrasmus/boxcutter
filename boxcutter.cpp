@@ -276,6 +276,17 @@ void normalize_coords(int *x, int *y, int *x2, int *y2)
 }
 
 
+void GetScreenRect(RECT *rect)
+{
+    //GetWindowRect(GetDesktopWindow(), rect);
+    rect->left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    rect->top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    rect->right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    rect->bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+}
+
+
+
 // Captures a screenshot from a region of the screen
 // saves it to a file
 bool capture_screen(const char *filename, int x, int y, int x2, int y2)
@@ -381,7 +392,7 @@ public:
         
         // determine screen dimensions
         RECT rect;
-        GetWindowRect(GetDesktopWindow(), &rect);
+        GetScreenRect(&rect);
         
         // create window
         DWORD exstyle = WS_EX_TRANSPARENT;
@@ -698,7 +709,7 @@ int main(int argc, char **argv)
                  strcmp(argv[i], "--fullscreen") == 0) 
         {
             RECT rect;
-            GetWindowRect(GetDesktopWindow(), &rect);
+            GetScreenRect(&rect);
             x1 = rect.left;
             y1 = rect.top;
             x2 = rect.right;
