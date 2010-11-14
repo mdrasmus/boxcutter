@@ -24,7 +24,7 @@ boxcutter-fs.exe: boxcutter-fs.cpp
 	$(CC) boxcutter-fs.cpp -o boxcutter-fs $(CFLAGS)
 
 
-pkg:
+pkg: $(FILES)
 	mkdir -p dist
 	rm -rf dist/boxcutter-$(VERSION)
 	mkdir -p dist/boxcutter-$(VERSION)
