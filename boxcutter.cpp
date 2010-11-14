@@ -39,8 +39,9 @@
 // constants
 const char* g_usage = "\n\
 usage: boxcutter [OPTIONS] [OUTPUT_FILENAME]\n\
-Saves a bitmap screenshot to 'OUTPUT_FILENAME' if given.  Otherwise, \n\
-screenshot is stored on the clipboard by default.\n\
+Saves a screenshot to 'OUTPUT_FILENAME' if given.  Only output formats
+'*.bmp' and '*.png' are supported.  If no file name is given,
+screenshot is stored on clipboard by default.
 \n\
 OPTIONS\n\
   -c, --coords X1,Y1,X2,Y2    capture the rectange (X1,Y1)-(X2,Y2)\n\

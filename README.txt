@@ -1,6 +1,6 @@
   
   boxcutter
-  Copyright Matt Rasmussen 2008
+  Copyright Matt Rasmussen 2010
 
 boxcutter is a simple command line-driven screenshot program.  Unlike
 using the "Print Screen" key, boxcutter allows the user to screenshot
@@ -10,7 +10,8 @@ screenshot onto the clipboard.
 
 usage: boxcutter [OPTIONS] [OUTPUT_FILENAME]
 
-Saves a bitmap screenshot to 'OUTPUT_FILENAME' if given.  Otherwise, 
+Saves a screenshot to 'OUTPUT_FILENAME' if given.  Only output formats
+"*.bmp" and "*.png" are supported.  If no file name is given,
 screenshot is stored on clipboard by default.
 
 OPTIONS
