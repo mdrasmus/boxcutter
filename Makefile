@@ -31,7 +31,7 @@ pkg: $(FILES)
 	rm -rf dist/boxcutter-$(VERSION)
 	mkdir -p dist/boxcutter-$(VERSION)
 	cp -r $(FILES) dist/boxcutter-$(VERSION)
-	zip -r dist/boxcutter-$(VERSION).zip dist/boxcutter-$(VERSION)
+	cd dist && zip -r boxcutter-$(VERSION).zip boxcutter-$(VERSION)
 
 upload:
 	cp -r dist/boxcutter-$(VERSION).zip \
