@@ -23,6 +23,9 @@ boxcutter.exe: boxcutter.cpp
 boxcutter-fs.exe: boxcutter-fs.cpp
 	$(CC) boxcutter-fs.cpp -o boxcutter-fs $(CFLAGS)
 
+png.exe: png.cpp
+	$(CC) png.cpp -o png $(CFLAGS) -Lgdi -lgdiplus
+
 
 pkg:
 	mkdir -p dist
