@@ -239,7 +239,14 @@ bool capture_screen(const char *filename, int x, int y, int x2, int y2)
     return ret;
 }
 
-
+void get_screen_rect(RECT *rect)
+{
+    //GetWindowRect(GetDesktopWindow(), rect);
+    rect->left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    rect->top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    rect->right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    rect->bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+}
 
 
 //=============================================================================
@@ -254,7 +261,7 @@ int main(int argc, char **argv)
 
     char *filename = argv[1];
     RECT rect;
-    GetWindowRect(GetDesktopWindow(), &rect);
+    get_screen_rect(&rect);
 
     // save to file
     if (!capture_screen(filename, rect.left, rect.top, 
