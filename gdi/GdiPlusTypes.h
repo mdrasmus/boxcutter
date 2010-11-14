@@ -15,6 +15,11 @@
 #ifndef _GDIPLUSTYPES_H
 #define _GDIPLUSTYPES_H
 
+#if !defined(max)
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 //--------------------------------------------------------------------------
 // Callback functions
 //--------------------------------------------------------------------------

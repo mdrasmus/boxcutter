@@ -79,6 +79,35 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
   return -1;  // Failure
 }
 
+bool save_png_file(HBITMAP hBmp, HDC hDC, const char *filename)
+{
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    
+    Bitmap* b = Bitmap::FromHBITMAP(hBmp, NULL);
+    
+    CLSID  encoderClsid;
+    Status stat = GenericError;
+    if (b && GetEncoderClsid(L"image/png", &encoderClsid) != -1) {
+        int len = strlen(filename);
+        WCHAR* wfilename = new WCHAR[len+1];
+        int ret = MultiByteToWideChar(CP_ACP, 0,
+                    filename, len, wfilename, len);
+        stat = b->Save(wfilename, &encoderClsid, NULL);
+        delete [] wfilename;
+    }
+    if (b)
+        delete b;
+  
+    // cleanup
+    GdiplusShutdown(gdiplusToken);
+    return stat == Ok;
+}
+
+/*
+OLD CODE for stand-alone version
+
 int main(int argc, wchar_t** argv)
 {
   GdiplusStartupInput gdiplusStartupInput;
@@ -112,3 +141,4 @@ int main(int argc, wchar_t** argv)
   DeleteDC(mydc);
   return stat == Ok;
 }
+*/

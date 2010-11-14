@@ -1,6 +1,6 @@
 # Makefile for boxcutter
 
-VERSION = 1.3
+VERSION = 1.4
 FILES = boxcutter.cpp \
 	boxcutter-fs.cpp \
 	boxcutter.exe \
@@ -13,7 +13,7 @@ CC=c:/mingw/bin/g++
 
 WWW = /var/www/dev/rasm/boxcutter/download
 
-CFLAGS=-mwindows -lcomctl32 -lgdi32 -I/usr/include/wine/msvcrt
+CFLAGS=-mwindows -lcomctl32 -lgdi32 -I/usr/include/wine/msvcrt -Lgdi -lgdiplus
 
 all: boxcutter.exe boxcutter-fs.exe
 
@@ -22,9 +22,6 @@ boxcutter.exe: boxcutter.cpp
 
 boxcutter-fs.exe: boxcutter-fs.cpp
 	$(CC) boxcutter-fs.cpp -o boxcutter-fs $(CFLAGS)
-
-png.exe: png.cpp
-	$(CC) png.cpp -o png $(CFLAGS) -Lgdi -lgdiplus
 
 
 pkg:

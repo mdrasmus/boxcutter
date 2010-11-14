@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 
+
 // windows includes
 #include <windows.h>
 #include <wincon.h>
@@ -30,6 +31,8 @@
 #include <fcntl.h>
 
 #include "bmp.cpp"
+#include "png.cpp"
+
 
 #define BOX_VERSION "1.4"
 
@@ -91,7 +94,6 @@ void get_screen_rect(RECT *rect)
 }
 
 
-
 // Captures a screenshot from a region of the screen
 // saves it to a file
 bool capture_screen(const char *filename, int x, int y, int x2, int y2)
@@ -108,12 +110,22 @@ bool capture_screen(const char *filename, int x, int y, int x2, int y2)
     HGDIOBJ old_obj = SelectObject(shot_dc, shot_bitmap);
     
     if (!BitBlt(shot_dc, 0, 0, w, h, screen_dc, x, y, SRCCOPY)) {
-	printf("error: BitBlt failed\n");
+        printf("error: BitBlt failed\n");
         return false;
     }
     
     // save bitmap to file
-    bool ret = save_bitmap_file(shot_bitmap, shot_dc, filename);
+    bool ret = false;
+    
+    int len = strlen(filename);
+    if (len > 4 && strcasecmp(filename + len - 4, ".png") == 0) {
+        ret = save_png_file(shot_bitmap, shot_dc, filename);
+    } else if (len > 4 && strcasecmp(filename + len - 4, ".bmp") == 0) {
+        ret = save_bitmap_file(shot_bitmap, shot_dc, filename);
+    } else {
+        printf("error: unknown output file format\n");
+        ret = false;
+    }
     
     DeleteDC(shot_dc);
     DeleteDC(screen_dc);
