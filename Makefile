@@ -1,6 +1,7 @@
 # Makefile for boxcutter
 
 VERSION = 1.4
+
 FILES = boxcutter.cpp \
 	boxcutter-fs.cpp \
 	boxcutter.exe \
@@ -8,7 +9,8 @@ FILES = boxcutter.cpp \
 	Makefile \
 	README.txt \
 	COPYING.LESSER \
-	LICENSE
+	LICENSE \
+	gdi
 CC=c:/mingw/bin/g++
 
 WWW = /var/www/dev/rasm/boxcutter/download
@@ -28,7 +30,7 @@ pkg: $(FILES)
 	mkdir -p dist
 	rm -rf dist/boxcutter-$(VERSION)
 	mkdir -p dist/boxcutter-$(VERSION)
-	cp $(FILES) dist/boxcutter-$(VERSION)
+	cp -r $(FILES) dist/boxcutter-$(VERSION)
 	zip -r dist/boxcutter-$(VERSION).zip dist/boxcutter-$(VERSION)
 
 upload:
