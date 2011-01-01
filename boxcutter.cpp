@@ -1,7 +1,7 @@
 /*=============================================================================
 
   boxcutter
-  Copyright Matt Rasmussen 2008
+  Copyright Matt Rasmussen 2008-2011
 
   A simple command line-driven screenshot program
   
@@ -34,14 +34,14 @@
 #include "png.cpp"
 
 
-#define BOX_VERSION "1.4"
+#define BOX_VERSION "1.5"
 
 // constants
 const char* g_usage = "\n\
 usage: boxcutter [OPTIONS] [OUTPUT_FILENAME]\n\
-Saves a screenshot to 'OUTPUT_FILENAME' if given.  Only output formats
-'*.bmp' and '*.png' are supported.  If no file name is given,
-screenshot is stored on clipboard by default.
+Saves a screenshot to 'OUTPUT_FILENAME' if given.  Only output formats\n\
+'*.bmp' and '*.png' are supported.  If no file name is given,\n\
+screenshot is stored on clipboard by default.\n\
 \n\
 OPTIONS\n\
   -c, --coords X1,Y1,X2,Y2    capture the rectange (X1,Y1)-(X2,Y2)\n\
@@ -52,7 +52,7 @@ OPTIONS\n\
 
 const char* g_version = "\n\
 boxcutter %s\n\
-Copyright Matt Rasmussen 2008\n\
+Copyright Matt Rasmussen 2008-2011\n\
 ";
 
 const char *g_class_name = "BoxCutter";

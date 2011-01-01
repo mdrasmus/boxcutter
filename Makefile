@@ -1,6 +1,6 @@
 # Makefile for boxcutter
 
-VERSION = 1.4
+VERSION = 1.5
 
 FILES = boxcutter.cpp \
 	boxcutter-fs.cpp \
@@ -19,7 +19,7 @@ CFLAGS=-mwindows -lcomctl32 -lgdi32 -I/usr/include/wine/msvcrt -Lgdi -lgdiplus
 
 all: boxcutter.exe boxcutter-fs.exe
 
-boxcutter.exe: boxcutter.cpp
+boxcutter.exe: boxcutter.cpp png.cpp
 	$(CC) boxcutter.cpp -o boxcutter $(CFLAGS)
 
 boxcutter-fs.exe: boxcutter-fs.cpp

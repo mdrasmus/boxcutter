@@ -93,7 +93,7 @@ bool save_png_file(HBITMAP hBmp, HDC hDC, const char *filename)
         int len = strlen(filename);
         WCHAR* wfilename = new WCHAR[len+1];
         int ret = MultiByteToWideChar(CP_ACP, 0,
-                    filename, len, wfilename, len);
+                    filename, len+1, wfilename, len+1);
         stat = b->Save(wfilename, &encoderClsid, NULL);
         delete [] wfilename;
     }
