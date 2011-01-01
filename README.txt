@@ -1,6 +1,6 @@
   
   boxcutter
-  Copyright Matt Rasmussen 2010
+  Copyright Matt Rasmussen 2008-2011
 
 boxcutter is a simple command line-driven screenshot program.  Unlike
 using the "Print Screen" key, boxcutter allows the user to screenshot
@@ -24,7 +24,7 @@ OPTIONS
 
   
   boxcutter-fs
-  Copyright Matt Rasmussen 2008
+  Copyright Matt Rasmussen 2008-2011
   Changes suggested by John Miller
 
 boxcutter-fs is a minimal Windows command line screenshot
