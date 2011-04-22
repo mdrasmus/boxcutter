@@ -34,7 +34,7 @@
 #include "png.cpp"
 
 
-#define BOX_VERSION "1.5"
+#define BOX_VERSION "1.6"
 
 // constants
 const char* g_usage = "\n\
@@ -90,8 +90,8 @@ void get_screen_rect(RECT *rect)
     //GetWindowRect(GetDesktopWindow(), rect);
     rect->left = GetSystemMetrics(SM_XVIRTUALSCREEN);
     rect->top = GetSystemMetrics(SM_YVIRTUALSCREEN);
-    rect->right = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-    rect->bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    rect->right = GetSystemMetrics(SM_CXVIRTUALSCREEN) + rect->left;
+    rect->bottom = GetSystemMetrics(SM_CYVIRTUALSCREEN) + rect->top;
 }
 
 
